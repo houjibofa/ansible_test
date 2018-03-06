@@ -3,3 +3,4 @@
 - hosts: mysql
   roles:
   - role: alisql_200
+  - role: alisql_5
