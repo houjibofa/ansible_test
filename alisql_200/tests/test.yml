@@ -1,5 +1,5 @@
 ---
-- hosts: localhost
+- hosts: '{{ mysql_host }}'
   remote_user: root
   roles:
     - ../../alisql_200
