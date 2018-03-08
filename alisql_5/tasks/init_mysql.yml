@@ -15,7 +15,7 @@
 
 - name: Create database sysbench
   mysql_db:
-    login_host: 192.168.1.155
+    login_host: "{{ mysql_host }}"
     login_password: 123456
     login_port: "{{ item[0] }}"
     login_user: root
