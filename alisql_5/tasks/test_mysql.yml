@@ -32,7 +32,7 @@
     --oltp-table-size=10000 \
     --oltp-tables-count=12 \
     --mysql-db=sysbench1 \
-    --report-interval=1 \
+    --report-interval=0 \
     --max-requests=0 \
     --time={{ test_time }} \
     --mysql-host={{ mysql_host }} \
@@ -53,8 +53,15 @@
     - 512
   
   register: alisql_result
+  ignore_errors: yes
 
-- debug: var=alisql_result 
+- lineinfile: create=yes dest=/tmp/alisql_5.log line="{{ alisql_result.out }}" state=present
+ 
+- name: fetch result
+  fetch:
+    src: /tmp/alisql_5.log
+    dest: /tmp/alisql_5.log
+    flat: yes
 
 - name: Kill alisql server on ARM64 Server
   shell: ps -ef | grep mysql | grep -v grep | awk '{print "kill -9 " $2}' | sh & 

@@ -5,6 +5,8 @@
   yum: name={{ item }} state=present
   with_items:
     - MySQL-python
+    - flex
+    - bison
 
 - name: remove all files in dst
   file:
