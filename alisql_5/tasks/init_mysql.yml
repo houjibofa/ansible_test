@@ -12,6 +12,9 @@
     priv: '*.*:ALL'
     state: present
   with_sequence: start={{ alisql_ins.split('-')[0] }} end={{ alisql_ins.split('-')[-1] }}
+  environment:
+    PATH: "{{ mysql_dir }}/my3306/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ mysql_dir }}/my3306/lib:{{ ansible_env.LD_LIBRARY_PATH }}"
 
 - name: Create database sysbench
   mysql_db:
@@ -24,6 +27,9 @@
   with_nested:
     - { 3306, 3307, 3308, 3309, 3310 }
     - { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 }
+  environment:
+    PATH: "{{ mysql_dir }}/my3306/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ mysql_dir }}/my3306/lib:{{ ansible_env.LD_LIBRARY_PATH }}"
 
 - name: Initialize the sysbench data
   shell: |
@@ -50,3 +56,6 @@
     --threads=10 \
     --mysql-port={{ item }} prepare
   with_sequence: start={{ alisql_ins.split('-')[0] }} end={{ alisql_ins.split('-')[-1] }}
+  environment:
+    PATH: "{{ mysql_dir }}/my3306/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ mysql_dir }}/my3306/lib:{{ ansible_env.LD_LIBRARY_PATH }}"

@@ -1,6 +1,8 @@
 ---
 # tasks file for mysql
 
+- import_tasks: opt_mysql.yml
+
 - import_tasks: pre_mysql.yml
 
 - import_tasks: build_mysql.yml

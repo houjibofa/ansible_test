@@ -2,11 +2,13 @@
 # tasks file for mysql
 
 - name: Install pre-some packages
-  yum: name={{ item }} state=present
+  yum: name={{ item }} state=present disable_gpg_check=yes
   with_items:
     - MySQL-python
     - flex
     - bison
+    - cmake
+    - libaio-devel
 
 - name: remove all files in dst
   file:
@@ -20,6 +22,17 @@
     group: root
     mode: 0777
     state: directory
+
+- name: create mysql group
+  group:
+    name: mysql
+    state: present
+
+- name: create user mysql
+  user:
+    name: mysql
+    group: mysql
+    state: present
 
 - name: download the source code
   get_url: url={{ item.url }} dest="{{ root_dir }}"

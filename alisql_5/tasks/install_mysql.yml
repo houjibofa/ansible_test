@@ -152,5 +152,12 @@
 
     {{ mysql_dir }}/my3306/bin/mysqld_safe  --defaults-file=/etc/my_{{ item }}.conf \
                                  --user=mysql &
-    
-  with_sequence: start={{ alisql_ins.split('-')[0] }} end={{ alisql_ins.split('-')[-1] }}   
+  with_sequence: start={{ alisql_ins.split('-')[0] }} end={{ alisql_ins.split('-')[-1] }} 
+  environment:
+    PATH: "{{ mysql_dir }}/my3306/bin:{{ ansible_env.PATH }}"
+    LD_LIBRARY_PATH: "{{ mysql_dir }}/my3306/lib:{{ ansible_env.LD_LIBRARY_PATH }}"
+
+- name: sleep 200 seconds 
+  shell: |
+    sleep 200
+ 

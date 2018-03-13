@@ -1,0 +1,9 @@
+---
+# tasks file for mysql
+
+- name: initialize the postgresql database
+  shell: |
+  
+    {{ postgres_dir }}/app/bin/gs_initdb -D {{ postgres_dir }}/data
+
+  
