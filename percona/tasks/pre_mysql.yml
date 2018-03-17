@@ -49,5 +49,3 @@
     repo: https://github.com/yejr/tpcc-mysql-autoinc-pk.git
     dest: "{{ root_dir }}/tpcc"
     
-- name: copy the boost source code
-  copy: src=boost_1_59_0.tar.gz dest="{{ root_dir }}" mode=0600

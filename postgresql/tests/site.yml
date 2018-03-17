@@ -2,4 +2,4 @@
 - hosts: '{{ mysql_host }}'
   remote_user: root
   roles:
-    - ../../percona
+    - ../../postgresql

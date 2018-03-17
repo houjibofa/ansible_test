@@ -9,4 +9,5 @@
 
 - import_tasks: init_postgres.yml
 
-- import_tasks: test_postgres.yml 
+- import_tasks: test_postgres.yml
+

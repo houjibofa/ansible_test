@@ -1,6 +1,9 @@
 ---
 # tasks file for mysql
-- name: create user mysql
+- group:
+    name: postgres
+    state: present
+- name: create user postgres
   user:
     name: postgres
     group: postgres
@@ -13,7 +16,7 @@
     mode: 0700
     state: directory
     
- - name: create app directory
+- name: create app directory
   file:
     path: "{{ postgres_dir }}/app"
     owner: postgres
@@ -21,7 +24,7 @@
     mode: 0700
     state: directory
 
-- name: Kill alisql server on ARM64 Server
+- name: Kill postgresql server on ARM64 Server
   shell: |
     ps -ef | grep postgres | grep -v grep | awk '{print "kill -9 " $2}' | sh 
     sleep 60
@@ -49,9 +52,11 @@
 
 - name: unarchive all souce codes
   unarchive: 
-    src: {{ item.src }} 
+    src: "{{ item.src }}" 
     dest: "{{ root_dir }}/{{ item.dst }}" 
     extra_opts: [--strip-components=1]
+    mode: 0777
+    owner: root
   with_items:
     - { src: '{{ root_dir }}/postgresql-10.3.tar.gz', dst: 'postgres' }
     - { src: '{{ root_dir }}/benchmarksql-5.0.tar.gz', dst: 'tpcc' }
@@ -61,8 +66,10 @@
   shell: |
     
     ./configure -prefix={{ postgres_dir }}/app  --enable-thread
-    make
-    make install
+    make -sj
+    make install -sj
+    
+    chown postgres:postgres -R {{ postgres_dir }}
     
   args:
     chdir: "{{ root_dir }}/postgres"

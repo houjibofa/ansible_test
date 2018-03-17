@@ -6,6 +6,8 @@
   with_items:
     - flex
     - bison
+    - java
+    - python-psycopg2
 
 - name: remove all files in dst
   file:

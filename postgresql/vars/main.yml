@@ -1,10 +1,9 @@
 ---
 # vars file for mysql
 
-alisql_ins: 3306
 
-root_dir: /root/mysql_test
+root_dir: /root/postgres_test
 
-mysql_dir: /u01
+postgres_dir: /u01
 
-mysql_host: 192.168.1.164
+postgres_host: 192.168.1.164
