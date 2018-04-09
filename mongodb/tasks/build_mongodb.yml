@@ -1,0 +1,109 @@
+---
+# tasks file for mysql
+      
+- name: create app directory
+  file:
+    path: /usr/local/mongodb
+    owner: root
+    group: root
+    mode: 0700
+    state: directory
+
+- name: unmount the u01 directory to /dev/nvme0n1
+  mount:
+    path: "{{ mongo_dir }}"
+    src:  "{{ device }}"
+    fstype: ext4
+    state: unmounted
+
+- name: Create a ext4 filesystem on /dev/nvme0n1
+  filesystem:
+    fstype: ext4
+    dev: "{{ device }}"
+    force: yes
+
+- name: mount the u01 directory to /dev/nvme0n1
+  mount:
+    path: "{{ mongo_dir }}"
+    src:  "{{ device }}"
+    fstype: ext4
+    opts: defaults,nobarrier,noatime,nodiratime,max_batch_time=0,discard 
+    state: mounted
+
+- name: unarchive all souce codes
+  unarchive: 
+    src: "{{ item.src }}"
+    dest: "{{ root_dir }}/{{ item.dst }}" 
+    extra_opts: [--strip-components=1]
+  with_items:
+    - { src: '{{ root_dir }}/gcc-gcc-5_4_0-release.tar.gz', dst: 'gcc' }  
+    - { src: '{{ root_dir }}/cmake-3.7.0-rc1.tar.gz', dst: 'cmake' } 
+
+- name: build the cmake
+  shell: |
+  
+    {{ root_dir }}/cmake/bootstrap --parallel=32 --bindir=/bin/
+    make
+
+    yum remove -y cmake
+    make install
+
+  args:
+    chdir: "{{ root_dir }}/cmake"    
+    
+- name: build the scons
+  shell: |
+  
+    python {{ root_dir }}/scons/bootstrap.py build/scons
+
+    cd {{ root_dir }}/scons/build/scons
+
+    python setup.py install --prefix=/usr/local/scons/
+
+    sed -i '$ a export PATH=$PATH:/usr/local/scons/bin' /etc/profile
+  args:
+    chdir: "{{ root_dir }}/scons"
+    
+- name: build gcc
+  shell: |
+  
+    unset LD_LIBRARY_PATH LIBRARY_PATH CPATH C_INCLUDE_PATH PKG_CONFIG_PATH CPLUS_INCLUDE_PATH INCLUDE
+
+    ./contrib/download_prerequisites
+
+    mkdir build_arm
+    cd build_arm
+
+    ../configure --prefix=/usr/local --mandir=/usr/share/man --infodir=/usr/share/info --enable-bootstrap --enable-shared --enable-threads=posix --enable-checking=release --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-linker-hash-style=gnu --enable-languages=c,c++,objc,obj-c++,java,fortran,ada,lto --enable-plugin --enable-initfini-array --disable-libgcj --enable-gnu-indirect-function --build=aarch64-unknown-linux
+
+    make -j 64
+    make install
+    
+    cp {{ root_dir }}/gcc/build_arm/stage1-aarch64-unknown-linux/libstdc++-v3/src/.libs/libstdc++.so.6.0.21 /usr/lib64
+
+    cd /usr/lib64
+    rm -rf libstdc++.so.6
+    ln -s libstdc++.so.6.0.21 libstdc++.so.6 
+  args:
+    chdir: "{{ root_dir }}/gcc"
+
+- name: build clang
+  shell: |
+  
+   cmake -DCMAKE_BUILD_TYPE=Release {{ root_dir }}/llvm  
+   make -j64
+   cmake --build . 
+   cmake --build . --target install
+ 
+  args:
+    chdir: "{{ root_dir }}/build_clang"
+    
+- name: build mongodb
+  shell: |
+    
+    /usr/local/scons/bin/scons core -j 64 CCFLAGS='-march=armv8-a+crc+crypto -mtune=generic' --release
+    /usr/local/scons/bin/scons install --prefix=/usr/local/mongodb -j 64
+    sed -i '$ a export PATH=$PATH:/usr/local/mongodb/bin' /etc/profile
+    
+  args:
+    chdir: "{{ root_dir }}/mongo"

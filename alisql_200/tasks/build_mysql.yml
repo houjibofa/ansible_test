@@ -13,11 +13,6 @@
     mode: 0755
     state: directory
 
-- name: Kill alisql server on ARM64 Server
-  shell: |
-    ps -ef | grep mysql | grep -v grep | awk '{print "kill -9 " $2}' | sh 
-    sleep 60
-
 - name: unmount the u01 directory to /dev/nvme0n1
   mount:
     path: "{{ mysql_dir }}"
@@ -40,10 +35,13 @@
     state: mounted
 
 - name: unarchive all souce codes
-  unarchive: src={{ item.src }} dest="{{ root_dir }}"
+  unarchive: 
+    src: "{{ item.src }}" 
+    dest: "{{ root_dir }}/{{ item.dst }}"
+    extra_opts: [--strip-components=1]
   with_items:
-    - { src: '{{ root_dir }}/AliSQL-AliSQL-5.6.32-1.tar.gz' }
-    - { src: '{{ root_dir }}/sysbench-1.0.0.tar.gz'} 
+    - { src: '{{ root_dir }}/AliSQL-AliSQL-5.6.32-1.tar.gz', dst: 'mysql' }
+    - { src: '{{ root_dir }}/sysbench-1.0.0.tar.gz' , dst: 'sysbench' }
 
 - name: install alisql
   shell: |
@@ -67,7 +65,7 @@
 
     make install -sj 32
   args:
-    chdir: "{{ root_dir }}/AliSQL-AliSQL-5.6.32-1/BUILD"
+    chdir: "{{ root_dir }}/mysql/BUILD"
 
 - name: install sysbench
   shell: |
@@ -79,7 +77,7 @@
     make 
     make install
   args:
-    chdir: "{{ root_dir }}/sysbench-1.0.0"
+    chdir: "{{ root_dir }}/sysbench"
   environment:
     PATH: "{{ mysql_dir }}/my3306/bin:{{ ansible_env.PATH }}"
     LD_LIBRARY_PATH: "{{ mysql_dir }}/my3306/lib:{{ ansible_env.LD_LIBRARY_PATH }}"

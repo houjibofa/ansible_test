@@ -1,0 +1,148 @@
+---
+# tasks file for mysql
+- name: clear the test result
+  file:
+    path: "/tmp/mongo_{{ item }}.log"
+    state: absent
+  with_items: ['a','b','c','d','e','f']
+ 
+- name: use the benchmark workloada to test the database 
+  shell: |
+
+    source /etc/profile
+    chmod 666 /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloada
+    sed -i 's/recordcount=.*/recordcount=100000/g'  /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloada
+    sed -i 's/operationcount=.*/operationcount=1000000/g'  /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloada
+
+    mongo 127.0.0.1:27017/ycsb {{mongo_dir }}/delete_ycsb.js
+
+    /usr/local/ycsb/ycsb/bin/ycsb load mongodb -s -threads 100 -p mongodb.url=mongodb://127.0.0.1:27017/ycsb  -P /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloada
+    /usr/local/ycsb/ycsb/bin/ycsb run mongodb  -s -threads 100 -p mongodb.url=mongodb://127.0.0.1:27017/ycsb  -P /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloada
+
+  register: mongo_result
+  ignore_errors: yes
+
+- name: get the workloada result
+  lineinfile: 
+    create: yes 
+    dest: "/tmp/mongo_a.log" 
+    line: "{{ mongo_result.stdout }}"
+    state: present
+
+- name: use the benchmark workloadb to test the database 
+  shell: |
+
+    source /etc/profile
+    chmod 666 /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloadb
+    sed -i 's/recordcount=.*/recordcount=1000000/g'  /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloadb
+    sed -i 's/operationcount=.*/operationcount=1000000/g'  /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloadb
+
+    mongo 127.0.0.1:27017/ycsb {{mongo_dir }}/delete_ycsb.js
+
+    /usr/local/ycsb/ycsb/bin/ycsb load mongodb -s -threads 100 -p mongodb.url=mongodb://127.0.0.1:27017/ycsb  -P /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloadb
+    /usr/local/ycsb/ycsb/bin/ycsb run mongodb  -s -threads 100 -p mongodb.url=mongodb://127.0.0.1:27017/ycsb  -P /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloadb
+
+  register: mongo_result
+  ignore_errors: yes
+  
+- name: get the workloadb result
+  lineinfile: 
+    create: yes 
+    dest: "/tmp/mongo_b.log" 
+    line: "{{ mongo_result.stdout }}"
+    state: present
+
+- name: use the benchmark workloadc to test the database 
+  shell: |
+
+    source /etc/profile
+    chmod 666 /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloadc
+    sed -i 's/recordcount=.*/recordcount=1000000/g'  /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloadc
+    sed -i 's/operationcount=.*/operationcount=1000000/g'  /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloadc
+
+    mongo 127.0.0.1:27017/ycsb {{mongo_dir }}/delete_ycsb.js
+
+    /usr/local/ycsb/ycsb/bin/ycsb load mongodb -s -threads 100 -p mongodb.url=mongodb://127.0.0.1:27017/ycsb  -P /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloadc
+    /usr/local/ycsb/ycsb/bin/ycsb run mongodb  -s -threads 100 -p mongodb.url=mongodb://127.0.0.1:27017/ycsb  -P /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloadc
+
+  register: mongo_result
+  ignore_errors: yes
+  
+- name: get the workloadc result
+  lineinfile: 
+    create: yes 
+    dest: "/tmp/mongo_c.log" 
+    line: "{{ mongo_result.stdout }}"
+    state: present
+   
+- name: use the benchmark workloadd to test the database 
+  shell: |
+
+    source /etc/profile
+    chmod 666 /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloadd
+    sed -i 's/recordcount=.*/recordcount=1000000/g'  /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloadd
+    sed -i 's/operationcount=.*/operationcount=1000000/g'  /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloadd
+
+    mongo 127.0.0.1:27017/ycsb {{mongo_dir }}/delete_ycsb.js
+
+    /usr/local/ycsb/ycsb/bin/ycsb load mongodb -s -threads 100 -p mongodb.url=mongodb://127.0.0.1:27017/ycsb  -P /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloadd
+    /usr/local/ycsb/ycsb/bin/ycsb run mongodb  -s -threads 100 -p mongodb.url=mongodb://127.0.0.1:27017/ycsb  -P /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloadd
+
+  register: mongo_result
+  ignore_errors: yes
+  
+- name: get the workloadd result
+  lineinfile: 
+    create: yes 
+    dest: "/tmp/mongo_d.log" 
+    line: "{{ mongo_result.stdout }}"
+    state: present
+ 
+- name: use the benchmark workloade to test the database 
+  shell: |
+
+    source /etc/profile
+    chmod 666 /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloade
+    sed -i 's/recordcount=.*/recordcount=1000000/g'  /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloade
+    sed -i 's/operationcount=.*/operationcount=1000000/g'  /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloade
+
+    mongo 127.0.0.1:27017/ycsb {{mongo_dir }}/delete_ycsb.js
+
+    /usr/local/ycsb/ycsb/bin/ycsb load mongodb -s -threads 100 -p mongodb.url=mongodb://127.0.0.1:27017/ycsb  -P /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloade
+    /usr/local/ycsb/ycsb/bin/ycsb run mongodb  -s -threads 100 -p mongodb.url=mongodb://127.0.0.1:27017/ycsb  -P /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloade
+
+  register: mongo_result
+  ignore_errors: yes
+  
+- name: get the workloade result
+  lineinfile: 
+    create: yes 
+    dest: "/tmp/mongo_e.log" 
+    line: "{{ mongo_result.stdout }}"
+    state: present
+    
+- name: use the benchmark workloadf to test the database 
+  shell: |
+
+    source /etc/profile
+    chmod 666 /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloadf
+    sed -i 's/recordcount=.*/recordcount=1000000/g'  /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloadf
+    sed -i 's/operationcount=.*/operationcount=1000000/g'  /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloadf
+
+    mongo 127.0.0.1:27017/ycsb {{mongo_dir }}/delete_ycsb.js
+
+    /usr/local/ycsb/ycsb/bin/ycsb load mongodb -s -threads 100 -p mongodb.url=mongodb://127.0.0.1:27017/ycsb  -P /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloadf
+    /usr/local/ycsb/ycsb/bin/ycsb run mongodb  -s -threads 100 -p mongodb.url=mongodb://127.0.0.1:27017/ycsb  -P /usr/local/ycsb/ycsb_data/ycsb-mongodb/workloads/workloadf
+
+  register: mongo_result
+  ignore_errors: yes
+  
+- name: get the workloadf result
+  lineinfile: 
+    create: yes 
+    dest: "/tmp/mongo_f.log" 
+    line: "{{ mongo_result.stdout }}"
+    state: present
+   
+- name: Kill alisql server on ARM64 Server
+  shell: ps -ef | grep mongo | grep -v grep | awk '{print "kill -9 " $2}' | sh & 

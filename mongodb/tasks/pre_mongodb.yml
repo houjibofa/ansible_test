@@ -1,0 +1,123 @@
+---
+# tasks file for mysql
+
+- name: Install pre-some packages
+  yum: name={{ item }} state=present
+  with_items:
+    - epel-release
+    - libffi-devel
+    - svn
+    - texinfo 
+    - gcc-gnat
+    - java-1.8.0-openjdk
+  when: ansible_os_family == "RedHat"
+  
+- name: Install pre-some packages in Ubuntu
+  apt: name={{ item }} state=present
+  with_items:
+    - build-essential
+    - libffi-dev
+    - subversion
+    - texinfo 
+    - libgnat-5
+    - openjdk-8-jdk 
+  when: ansible_os_family == "Debian"
+
+- name: remove all files in dst
+  file:
+    path: "{{ root_dir }}"
+    state: absent
+
+- name: remove all files in ycsb directory
+  file:
+    path: /usr/local/ycsb/
+    state: absent
+
+- name: crate the des directory
+  file:
+    path: "{{ root_dir }}"
+    owner: root
+    group: root
+    mode: 0777
+    state: directory
+    
+- name: crate the tpcc script directory
+  file:
+    path: "{{ root_dir }}/{{ item }}"
+    owner: root
+    group: root
+    mode: 0777
+    state: directory
+  with_items:
+    - gcc
+    - mongo
+    - ycsb
+    - scons
+    - build_clang
+    - cmake
+  
+- name: crate the ycsb directory
+  file:
+    path: /usr/local/ycsb
+    owner: root
+    group: root
+    mode: 0600
+    state: directory
+    
+- name: crate the ycsb directory
+  file:
+    path: /usr/local/ycsb/ycsb
+    owner: root
+    group: root
+    mode: 0600
+    state: directory
+    
+- name: crate the ycsb-data directory
+  file:
+    path: /usr/local/ycsb/ycsb_data
+    owner: root
+    group: root
+    mode: 0600
+    state: directory
+   
+- name: download the source code
+  get_url: url={{ item.url }} dest="{{ root_dir }}"
+  with_items:
+    - { url: 'https://github.com/gcc-mirror/gcc/archive/gcc-5_4_0-release.tar.gz' }
+    - { url: 'https://cmake.org/files/v3.7/cmake-3.7.0-rc1.tar.gz' }
+    
+- name: git clone mongodb
+  git: 
+    repo: https://github.com/mongodb/mongo.git
+    dest: "{{ root_dir }}/mongo"
+    version: r3.3.12
+    
+- name: git clone scons
+  git: 
+    repo: https://github.com/SCons/scons.git
+    dest: "{{ root_dir }}/scons"
+
+- name: git clone mongodb
+  git: 
+    repo: https://github.com/mongodb-labs/YCSB.git
+    dest: "{{ root_dir }}/ycsb"
+    
+- name: svn down the llvm souce code
+  subversion:
+    repo: http://llvm.org/svn/llvm-project/llvm/tags/RELEASE_390/final/
+    dest: "{{ root_dir }}/llvm"
+    
+- name: git ycsb-mongodb data
+  git: 
+    repo: https://github.com/mongodb-labs/YCSB
+    dest: /usr/local/ycsb/ycsb_data
+    
+- name: svn down the clang souce code
+  subversion:
+    repo: http://llvm.org/svn/llvm-project/cfe/tags/RELEASE_390/final/
+    dest: "{{ root_dir }}/llvm/clang"  
+
+- name: get the ycsb test script
+  git: 
+    repo: https://github.com/brianfrankcooper/YCSB.git
+    dest: /usr/local/ycsb/ycsb 

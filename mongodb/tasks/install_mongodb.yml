@@ -1,0 +1,56 @@
+---
+# tasks file for mysql
+
+- name: remove all files in dst
+  file:
+    path: "{{ mongo_dir }}/mongodb"
+    state: absent
+
+- name: crate the data directory
+  file:
+    path: "{{ mongo_dir }}/mongodb/data"
+    owner: root
+    group: root
+    mode: 0600
+    state: directory
+    
+- name: crate the repair directory
+  file:
+    path: "{{ mongo_dir }}/data/repair"
+    owner: root
+    group: root
+    mode: 0600
+    state: directory
+    
+- name: crate the des directory
+  file:
+    path: "{{mongo_dir }}/mongodb/log"
+    owner: root
+    group: root
+    mode: 0600
+    state: directory
+  
+    
+- name: copy mongo configuration files
+  template:
+    src: mongod.conf.j2
+    dest: /etc/mongod.conf
+    mode: 0600
+    owner: root
+    group: root
+    
+- name: copy the delete_ycsb 
+  copy: src=delete_ycsb.js dest="{{ root_dir }}" mode=0600
+ 
+- name: copy the delete_ycsb 
+  copy: src=delete_ycsb.js dest="{{ root_dir }}" mode=0600
+
+- name: initialize and start the mongo database
+  shell: |
+    sed -i 's/authorization:\.*enabled/authorization:\ disabled/g' /etc/mongod.conf
+    numactl --interleave=all /usr/local/mongodb/bin/mongod -f /etc/mongod.conf
+    sleep 60
+  become: true
+  become_user: root
+
+

@@ -2,13 +2,33 @@
 # tasks file for mysql
 
 - name: Install pre-some packages
-  yum: name={{ item }} state=present disable_gpg_check=yes
+  yum: name={{ item }} state=present
   with_items:
     - MySQL-python
     - flex
     - bison
     - cmake
     - libaio-devel
+    - ncurses-devel
+  when: ansible_os_family == "RedHat"
+ 
+- name: Install pre-some packages in Ubuntu
+  apt: name={{ item }} state=present
+  with_items:
+    - flex
+    - bison
+    - cmake
+    - libaio-dev
+    - build-essential
+    - pkg-config
+    - libmysqlclient-dev
+    - python-mysqldb
+    - python-pip
+    - python-dev
+    - automake
+    - numactl
+    - libncurses5-dev
+  when: ansible_os_family == "Debian"
 
 - name: remove all files in dst
   file:
@@ -33,6 +53,17 @@
     name: mysql
     group: mysql
     state: present
+    
+- name: crate the des directory
+  file:
+    path: "{{ root_dir }}/{{ item }}"
+    owner: root
+    group: root
+    mode: 0777
+    state: directory
+  with_items:
+    - sysbench
+    - mysql
 
 - name: download the source code
   get_url: url={{ item.url }} dest="{{ root_dir }}"

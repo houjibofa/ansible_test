@@ -13,6 +13,7 @@
 - name: use the sysbench to test the database 
   shell: |
 
+    export LD_LIBRARY_PATH={{ mysql_dir }}/my3306/lib:$LD_LIBRARY_PATH
     sysbench  /usr/local/share/sysbench/tests/include/oltp_legacy/oltp.lua \
     --oltp-table-size={{ sysbench_table_size }} \
     --oltp-tables-count={{ sysbench_table_count }} \

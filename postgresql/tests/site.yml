@@ -1,5 +1,5 @@
 ---
-- hosts: '{{ mysql_host }}'
+- hosts: '{{ postgres_host }}'
   remote_user: root
   roles:
     - ../../postgresql

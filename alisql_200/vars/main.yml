@@ -7,10 +7,8 @@ root_dir: /root/mysql_test
 
 mysql_dir: /u01
 
-mysql_host: 192.168.1.164
-
 sysbench_table_count: 8
 
-sysbench_table_size: 100000
+sysbench_table_size: 200000
 
-test_time: 3600
+test_time: 7200

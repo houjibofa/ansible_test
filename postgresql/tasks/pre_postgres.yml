@@ -7,7 +7,15 @@
     - flex
     - bison
     - java
-    - python-psycopg2
+  when: ansible_os_family == "RedHat"
+  
+- name: Install pre-some packages in Ubuntu
+  apt: name={{ item }} state=present
+  with_items:
+    - flex
+    - bison
+    - openjdk-8-jdk
+  when: ansible_os_family == "Debian"
 
 - name: remove all files in dst
   file:

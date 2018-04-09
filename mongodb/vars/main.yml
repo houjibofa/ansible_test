@@ -1,0 +1,9 @@
+---
+# vars file for mysql
+
+
+root_dir: /root/mongodb_test
+
+mongo_dir: /u01
+
+device: /dev/nvme0n1

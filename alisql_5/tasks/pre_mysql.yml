@@ -2,7 +2,7 @@
 # tasks file for mysql
 
 - name: Install pre-some packages
-  yum: name={{ item }} state=present disable_gpg_check=yes
+  yum: name={{ item }} state=present 
   with_items:
     - MySQL-python
     - flex
@@ -10,7 +10,27 @@
     - cmake
     - libaio-devel
     - numactl
-
+    - ncurses-devel
+  when: ansible_os_family == "RedHat"
+  
+- name: Install pre-some packages in Ubuntun
+  apt: name={{ item }} state=present
+  with_items:
+    - flex
+    - bison
+    - cmake
+    - libaio-dev
+    - build-essential
+    - pkg-config
+    - libmysqlclient-dev
+    - python-pip
+    - python-dev
+    - automake
+    - numactl
+    - libncurses5-dev
+    - python-mysqldb
+  when: ansible_os_family == "Debian"
+  
 - name: remove all files in dst
   file:
     path: "{{ root_dir }}"

@@ -33,7 +33,7 @@
 
 - name: Initialize the sysbench data
   shell: |
-
+    export LD_LIBRARY_PATH={{ mysql_dir }}/my3306/lib:$LD_LIBRARY_PATH
     sysbench {{ root_dir }}/db/parallel_prepare.lua \
     --db-driver=mysql \
     --oltp-test-mode=complex  \

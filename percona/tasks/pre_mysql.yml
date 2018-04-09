@@ -11,6 +11,26 @@
     - libaio-devel
     - readline
     - readline-devel
+  when: ansible_os_family == "RedHat"
+  
+- name: Install pre-some packages in Ubuntu
+  apt: name={{ item }} state=present
+  with_items:
+    - flex
+    - bison
+    - cmake
+    - libaio-dev
+    - build-essential
+    - pkg-config
+    - libmysqlclient-dev
+    - python-pip
+    - python-dev
+    - automake
+    - numactl
+    - libncurses5-dev
+    - python-mysqldb
+    - libreadline-dev
+  when: ansible_os_family == "Debian"
 
 - name: remove all files in dst
   file:

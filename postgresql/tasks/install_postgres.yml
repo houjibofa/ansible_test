@@ -32,6 +32,7 @@
 - name: start the postgresql database
   shell: |
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{{ postgres_dir }}/app/lib
+    export LANG=C
     {{ postgres_dir }}/app/bin/pg_ctl start -D {{ postgres_dir }}/data
   become: true
   become_user: postgres

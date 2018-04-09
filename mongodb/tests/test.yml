@@ -1,0 +1,5 @@
+---
+- hosts: '{{ mongodb_host }}'
+  remote_user: root
+  roles:
+    - ../../momgodb

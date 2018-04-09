@@ -1,0 +1,13 @@
+---
+# tasks file for mysql
+
+- import_tasks: opt_mongodb.yml
+
+- import_tasks: pre_mongodb.yml
+
+- import_tasks: build_mongodb.yml
+
+- import_tasks: install_mongodb.yml
+
+- import_tasks: test_mongodb.yml
+
